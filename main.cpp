@@ -46,10 +46,10 @@ void changePosition(GLfloat x, GLfloat z){
   mainCamera.tX = 0;
   mainCamera.tY = 3.05;
   if(z <= 0){
-    mainCamera.tZ = -14.325;
+    mainCamera.tZ = -15;
   }
   else{
-    mainCamera.tZ = 14.325;
+    mainCamera.tZ = 15;
   }
 
   GLfloat deltaX = (mainCamera.tX - mainCamera.x);
@@ -90,43 +90,301 @@ GLvoid resize(GLsizei width, GLsizei height)
   glutPostRedisplay();
 }
 
+
+
+void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius, int rot){
+  glPushMatrix();
+
+  glRotatef(-90,rot,0,0);
+  int i;
+  int lineAmount = 100; //# of triangles used to draw circle
+  //GLfloat radius = 0.8f; //radius
+  GLfloat twicePi = 2.0f * PI;
+  glBegin(GL_LINE_STRIP);
+  for(i = 0; i <= lineAmount/2;i++) {
+    glVertex2f(
+    x + (radius * cos(i * twicePi / lineAmount)),
+    y + (radius* sin(i * twicePi / lineAmount))
+    );
+  }
+  glEnd();
+  glPopMatrix();
+}
+
+
+void drawFieldLines(){
+
+  glColor3f(1,0,0);
+  glLineWidth(20);
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glVertex3f(-6.1, 0, -15);
+  glVertex3f(-6.1, 0, -12.0);
+  glEnd();
+  glPopMatrix();
+
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(6.1, 0, -15);
+  glVertex3f(6.1, 0, -12.0);
+  glEnd();
+  glPopMatrix();
+
+  drawHollowCircle(0,-12, 6.1, -1);
+  drawHollowCircle(0,0, 1.8,-1);
+  drawHollowCircle(0,-9.2, 1.8,-1);
+
+  /*garrafao*/
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(2.45, 0, -9.2);
+  glVertex3f(-2.45, 0, -9.2);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(2.45, 0, -15);
+  glVertex3f(2.45, 0, -9.2);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(-2.45, 0, -15);
+  glVertex3f(-2.45, 0, -9.2);
+  glEnd();
+  glPopMatrix();
+
+  /*Linha central*/
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(7.5, 0, 0);
+  glVertex3f(-7.5, 0, 0);
+  glEnd();
+  glPopMatrix();
+
+  /*2 METADE*/
+  glColor3f(1,0,0);
+  glLineWidth(20);
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glVertex3f(-6.1, 0, 15);
+  glVertex3f(-6.1, 0, 12.0);
+  glEnd();
+  glPopMatrix();
+
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(6.1, 0, 15);
+  glVertex3f(6.1, 0, 12.0);
+  glEnd();
+  glPopMatrix();
+
+  drawHollowCircle(0,-12, 6.1, 1);
+  drawHollowCircle(0,0, 1.8,1);
+  drawHollowCircle(0,-9.2, 1.8,1);
+
+  /*garrafao*/
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(2.45, 0, 9.2);
+  glVertex3f(-2.45, 0, 9.2);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(2.45, 0, 15);
+  glVertex3f(2.45, 0, 9.2);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(-2.45, 0, 15);
+  glVertex3f(-2.45, 0, 9.2);
+  glEnd();
+  glPopMatrix();
+
+  /*Linhas exteriores*/
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(7.5, 0, -15);
+  glVertex3f(7.5, 0, 15);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(-7.5, 0, -15);
+  glVertex3f(-7.5, 0, 15);
+  glEnd();
+  glPopMatrix();
+
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(-7.5, 0, 15);
+  glVertex3f(7.5, 0, 15);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glBegin(GL_LINES);
+  glLineWidth(10);
+  glVertex3f(-7.5, 0, -15);
+  glVertex3f(7.5, 0, -15);
+  glEnd();
+  glPopMatrix();
+}
+
+
+
+
+
 void drawField(){
   glPushMatrix();
   glColor3f(1,1,1);
   
   glBegin(GL_QUADS);
-  glVertex3f(-7.62, 0, -14.325);
-  glVertex3f(-7.62, 0, 14.325);
-  glVertex3f(7.62, 0, 14.325);
-  glVertex3f(7.62, 0, -14.325);
+  glVertex3f(-8.5, 0, -16);
+  glVertex3f(-8.5, 0, 16);
+  glVertex3f(8.5, 0, 16);
+  glVertex3f(8.5, 0, -16);
   glEnd();
   
   glPopMatrix();
 
+  drawFieldLines();
   
   glPushMatrix();
   glColor4f(1.0,0.0,0.0,1.0);
-  glTranslatef(0.0,0.0,14.325);
+  glTranslatef(0.0,0.0,15);
   glRotatef(-90,1,0,0);
   
   GLUquadric *quadric;
   quadric = gluNewQuadric();
   gluQuadricNormals(quadric, GLU_SMOOTH);
   
-  gluCylinder(quadric,0.05,0.05,3.05,50,50);
+  gluCylinder(quadric,0.05,0.05,2.9,50,50);
   glPopMatrix();
   
   glPushMatrix();
   glColor4f(1.0,0.0,0.0,1.0);
-  glTranslatef(0.0,0.0,-14.325);
+  glTranslatef(0.0,0.0,-15);
   glRotatef(-90,1,0,0);
   
   quadric = gluNewQuadric();
   gluQuadricNormals(quadric, GLU_SMOOTH);
   
-  gluCylinder(quadric,0.05,0.05,3.05,50,50);
+  gluCylinder(quadric,0.05,0.05,2.9,50,50);
   glPopMatrix();
-		
+
+  /*tabela*/
+  glPushMatrix();
+
+  glColor4f(1,1,1,1);
+  glRotatef(-90,1,0,0);
+  glTranslatef(0.0,0.0,(2.9+0.75));
+  glBegin(GL_QUADS);
+  glVertex3f(-1.5, 15, -0.75);
+  glVertex3f(-1.5, 15, 0.75);
+  glVertex3f(1.5, 15, 0.75);
+  glVertex3f(1.5, 15, -0.75);
+  glEnd();
+  glPopMatrix();
+
+  /*quadrado tabela*/
+  glPushMatrix();
+  glColor4f(1,0,0,1);
+  glLineWidth(5);
+  glRotatef(-90,1,0,0);
+  glTranslatef(0.0,0.0,(2.9+0.375));
+  glBegin(GL_LINES);
+  glVertex3f(-0.3, 15, 0.225);
+  glVertex3f(-0.3, 15, -0.225);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-0.3, 15, -0.225);
+  glVertex3f(0.3, 15, -0.225);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(0.3, 15, -0.225);
+  glVertex3f(0.3, 15, 0.225);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-0.3, 15, 0.225);
+  glVertex3f(0.3, 15, 0.225);
+  glEnd();
+  glPopMatrix();
+
+
+  glPushMatrix();
+  glTranslatef(0, (2.9+0.15),-14.65);
+  drawHollowCircle(0, 0, 0.35, 1);
+  drawHollowCircle(0, 0, 0.35, -1);
+	glPopMatrix();
+
+  /*2tabela*/
+  glPushMatrix();
+
+  glColor4f(1,1,1,1);
+  glRotatef(-90,1,0,0);
+  glTranslatef(0.0,0.0,(2.9+0.75));
+  glBegin(GL_QUADS);
+  glVertex3f(-1.5, -15, -0.75);
+  glVertex3f(-1.5, -15, 0.75);
+  glVertex3f(1.5, -15, 0.75);
+  glVertex3f(1.5, -15, -0.75);
+  glEnd();
+  glPopMatrix();
+
+  /*quadrado tabela*/
+  glPushMatrix();
+  glColor4f(1,0,0,1);
+  glLineWidth(5);
+  glRotatef(-90,1,0,0);
+  glTranslatef(0.0,0.0,(2.9+0.375));
+  glBegin(GL_LINES);
+  glVertex3f(-0.3, -15, 0.225);
+  glVertex3f(-0.3, -15, -0.225);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-0.3, -15, -0.225);
+  glVertex3f(0.3, -15, -0.225);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(0.3, -15, -0.225);
+  glVertex3f(0.3, -15, 0.225);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-0.3, -15, 0.225);
+  glVertex3f(0.3, -15, 0.225);
+  glEnd();
+  glPopMatrix();
+
+
+  glPushMatrix();
+  glTranslatef(0, (2.9+0.15),14.65);
+  drawHollowCircle(0, 0, 0.35, 1);
+  drawHollowCircle(0, 0, 0.35, -1);
+  glPopMatrix();
 }
 
 void draw(void){
@@ -149,8 +407,8 @@ void draw(void){
 
 void keyboard(unsigned char key, int x, int y){
   if(key == 'r'){
-    GLfloat _x = random(-7.62, 7.62);
-    GLfloat _z = random(-7.62, 7.62);
+    GLfloat _x = random(-7.5, 7.5);
+    GLfloat _z = random(-7.5, 7.5);
     changePosition(_x,_z);
     return;
   }

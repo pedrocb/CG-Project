@@ -1,6 +1,8 @@
 #include "main.hpp"
 #include "camera.hpp"
 #include "ball.hpp"
+#include "RgbImage.h"
+
 
 Camera mainCamera;
 Ball ball;
@@ -11,6 +13,10 @@ GLfloat ambientColor[4] =  {0.7,0.7,0.7,1.0};
 
 GLfloat draw_interval = 1000.0 / 30.0;
 
+GLuint  textures[5];
+RgbImage imag;
+
+
 bool keys[256];
 bool leftKey = false, rightKey = false, upKey = false, downKey = false;
 
@@ -19,7 +25,52 @@ GLfloat random(GLfloat minimo, GLfloat maximo){
   y = rand()%1000;
   return (minimo+ 0.001*y*(maximo-minimo));
 }
+void defineTextures(){
 
+  glGenTextures(1, &textures[0]); 
+  glBindTexture(GL_TEXTURE_2D, textures[0]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("grass.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+
+
+  glGenTextures(1, &textures[1]); 
+  glBindTexture(GL_TEXTURE_2D, textures[1]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("sand.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+  glGenTextures(1, &textures[2]); 
+  glBindTexture(GL_TEXTURE_2D, textures[2]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("cim.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+  glGenTextures(1, &textures[3]); 
+  glBindTexture(GL_TEXTURE_2D, textures[3]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("calcada.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+
+}
 
 void initLights(void){
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientColor);
@@ -27,8 +78,11 @@ void initLights(void){
 
 void init(void)
 {
-  glClearColor(0.0,1.0,0.0,1.0);
+  glClearColor(1.0,1.0,1.0,1.0);
   glShadeModel(GL_SMOOTH);
+  defineTextures(); 
+  glEnable(GL_TEXTURE_2D);
+  
   initLights();
   glEnable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);
@@ -38,6 +92,8 @@ void init(void)
 GLfloat distance(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2){
   return sqrt(pow(x2 - x1, 2.0f) + pow(y2 - y1, 2.0f) + pow(z2 - z1, 2.0f));
 }
+
+
 
 void changePosition(GLfloat x, GLfloat z){
   mainCamera.x = x;
@@ -92,6 +148,7 @@ GLvoid resize(GLsizei width, GLsizei height)
 
 
 
+
 void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius, int rot){
   glPushMatrix();
 
@@ -114,9 +171,9 @@ void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius, int rot){
 
 void drawFieldLines(){
 
-  glColor3f(1,0,0);
   glLineWidth(20);
   glPushMatrix();
+  glColor3f(1,0,0);
   glBegin(GL_LINES);
   glVertex3f(-6.1, 0, -15);
   glVertex3f(-6.1, 0, -12.0);
@@ -171,6 +228,7 @@ void drawFieldLines(){
   glPopMatrix();
 
   /*2 METADE*/
+  glPushMatrix();
   glColor3f(1,0,0);
   glLineWidth(20);
   glPushMatrix();
@@ -254,9 +312,230 @@ void drawFieldLines(){
   glPopMatrix();
 }
 
+void drawSits(int side){
+
+  int i;
+  glPushMatrix();
+  glColor4f(1.0,1.0,0.0,0.0);
+  glTranslatef(-9.5,0.0,3.5*side);
+  
+  for(i = 0; i < 10;i++){
+    glTranslatef(0,0,1*side);
+    glutSolidCube(1);
+
+  } 
+  glPopMatrix();
+  
+  glPushMatrix();
+  glColor4f(1.0,0.0,0.0,0.0);
+  glTranslatef(-10.5,0.5,3.5*side);
+  for(i = 0; i < 10;i++){
+    glTranslatef(0,0,1*side);
+    glutSolidCube(1);
+
+  } 
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor4f(1.0,1.0,0.0,0.0);
+  glTranslatef(-11.5,0.0,3.5*side);
+  for(i = 0; i < 10;i++){
+    glTranslatef(0,0,1*side);
+    glutSolidCube(1);
+
+  } 
+  glPopMatrix();
 
 
+  glPushMatrix();
+  glColor4f(1.0,1.0,0.0,0.0);
+  glTranslatef(-11.5,1.0,3.5*side);
+  for(i = 0; i < 10;i++){
+    glTranslatef(0,0,1*side);
+    glutSolidCube(1);
 
+  } 
+  glPopMatrix();
+
+}
+
+
+void drawPaisagem(){
+
+  glPushMatrix();
+  glTranslatef(11.5,0,0);
+  glColor4f(255, 43, 0, 0);
+  glBegin(GL_QUADS);
+  glVertex3f(-3, 0, -16);
+  glVertex3f(-3, 0, 16);
+  glVertex3f(3, 0, 16);
+  glVertex3f(3, 0, -16);
+  glEnd();
+
+  glColor4f(1,0,0,0);
+  glBegin(GL_LINES);
+  glVertex3f(-1.5, 0, -16);
+  glVertex3f(-1.5, 0, 16);
+  glEnd();
+
+  glBegin(GL_LINES);
+  glVertex3f(1.5, 0, -16);
+  glVertex3f(1.5, 0, 16);
+  glEnd();
+
+  glBegin(GL_LINES);
+  glVertex3f(-3, 0, -16);
+  glVertex3f(-3, 0, 16);
+  glEnd();
+
+  glBegin(GL_LINES);
+  glVertex3f(3, 0, -16);
+  glVertex3f(3, 0, 16);
+  glEnd();
+
+  glBegin(GL_LINES);
+  glVertex3f(0, 0, -16);
+  glVertex3f(0, 0, 16);
+  glEnd();
+
+
+  glBegin(GL_LINES);
+  glVertex3f(3, 0, -16);
+  glVertex3f(-3, 0, -16);
+  glEnd();
+
+  glBegin(GL_LINES);
+  glVertex3f(3, 0, 16);
+  glVertex3f(-3, 0, 16);
+  glEnd();
+
+  glBegin(GL_LINES);
+  glVertex3f(3, 0, -15);
+  glVertex3f(-3, 0, -15);
+  glEnd();
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[1]);
+
+  glTranslatef(0,0,-19);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-3, 0, -3);
+  glTexCoord2f(2.0f,0.0f); glVertex3f(-3, 0, 3);
+  glTexCoord2f(2.0f,2.0f); glVertex3f(3, 0, 3);
+  glTexCoord2f(0.0f,2.0f); glVertex3f(3, 0, -3);
+  glEnd();
+  
+
+  glPopMatrix();
+
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[0]);
+  glPushMatrix();
+  glTranslatef(16.5,0,0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-2, 0, -23);
+  glTexCoord2f(10.0f,0.0f); glVertex3f(-2, 0, 16);
+  glTexCoord2f(10.0f,10.0f); glVertex3f(2, 0, 16);
+  glTexCoord2f(0.0f,10.0f); glVertex3f(2, 0, -23);
+  glEnd();
+
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[2]);
+
+  glPushMatrix();
+
+  glTranslatef(-10.5,0,0);
+  glColor4f(0,0,0,0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-2, 0, -16);
+  glTexCoord2f(2.0f,0.0f);glVertex3f(-2, 0, 16);
+  glTexCoord2f(2.0f,2.0f);glVertex3f(2, 0, 16);
+  glTexCoord2f(0.0f,2.0f);glVertex3f(2, 0, -16);
+  glEnd();
+
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[0]);
+  glPushMatrix();
+  glTranslatef(0,0,18);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-12.5, 0, -2);
+  glTexCoord2f(10.0f,0.0f); glVertex3f(-12.5, 0, 2);
+  glTexCoord2f(10.0f,10.0f); glVertex3f(18.5, 0, 2);
+  glTexCoord2f(0.0f,10.0f); glVertex3f(18.5, 0, -2);
+  glEnd();
+
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(0,0,-18);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-12.5, 0, -4);
+  glTexCoord2f(10.0f,0.0f); glVertex3f(-12.5, 0, 2);
+  glTexCoord2f(10.0f,10.0f); glVertex3f(8.5, 0, 2);
+  glTexCoord2f(0.0f,10.0f); glVertex3f(8.5, 0, -4);
+  glEnd();
+
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(0,0,-22.5);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-12.5, 0, -0.5);
+  glTexCoord2f(10.0f,0.0f); glVertex3f(-12.5, 0, 0.5);
+  glTexCoord2f(10.0f,10.0f); glVertex3f(14.5, 0, 0.5);
+  glTexCoord2f(0.0f,10.0f); glVertex3f(14.5, 0, -0.5);
+  glEnd();
+
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  drawSits(-1);
+  drawSits(1);
+}
+
+
+void drawBullding(){
+
+  glPushMatrix();
+
+  glTranslatef(25, 2.5, 15);
+  glutSolidCube(5);
+  glPopMatrix();
+
+}
+
+void drawRoad(){
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+
+  glTranslatef(20, 0, 0);
+
+  glPushMatrix();
+
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-2, 0, -20);
+  glTexCoord2f(2.0f,0.0f);glVertex3f(-2, 0, 20);
+  glTexCoord2f(2.0f,2.0f);glVertex3f(2, 0, 20);
+  glTexCoord2f(0.0f,2.0f);glVertex3f(2, 0, -20);
+  glEnd();
+
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glPopMatrix();
+
+
+}
 
 void drawField(){
   glPushMatrix();
@@ -385,6 +664,10 @@ void drawField(){
   drawHollowCircle(0, 0, 0.35, 1);
   drawHollowCircle(0, 0, 0.35, -1);
   glPopMatrix();
+
+  drawPaisagem();
+  drawBullding();
+  drawRoad();
 }
 
 void draw(void){
@@ -417,6 +700,7 @@ void keyboard(unsigned char key, int x, int y){
   }
   keys[key] = true;
 }
+
 
 void keyboard2Up(int key, int x, int y){
   if(key == GLUT_KEY_LEFT){

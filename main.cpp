@@ -5,11 +5,16 @@
 Camera mainCamera;
 Ball ball;
 
+bool ball_inside;
+
 GLfloat worldLimitX = 100.0, worldLimitZ = 50.0;
 GLfloat wScreen = 800.0, hScreen = 600.0;
 GLfloat ambientColor[4] =  {0.7,0.7,0.7,1.0};
 
 GLfloat draw_interval = 1000.0 / 30.0;
+GLfloat zoneRadius = 2.5;
+
+GLfloat playerX, playerZ = 0;
 
 bool keys[256];
 bool leftKey = false, rightKey = false, upKey = false, downKey = false;
@@ -20,6 +25,21 @@ GLfloat random(GLfloat minimo, GLfloat maximo){
   return (minimo+ 0.001*y*(maximo-minimo));
 }
 
+void changeView(){
+  playerX = mainCamera.x;
+  playerZ = mainCamera.z;
+  mainCamera.x = -10;
+  mainCamera.tX = ball.x;
+  if(ball.z < 0){
+    mainCamera.z = (-14.325 - ball.z)/2.0;
+    mainCamera.tZ = (-14.325 - ball.z)/2.0;
+    
+  }
+  else{
+    mainCamera.z = (14.325 - ball.z)/2.0;
+    mainCamera.tZ = (14.325 - ball.z)/2.0;
+  }
+}
 
 void initLights(void){
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientColor);
@@ -33,6 +53,23 @@ void init(void)
   glEnable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_COLOR_MATERIAL);
+}
+
+
+void DrawCircle(float cx, float cz, float r, int num_segments)
+{
+    glBegin(GL_LINE_LOOP);
+    for(int ii = 0; ii < num_segments; ii++)
+    {
+      float theta = 2.0f * PI * float(ii) / float(num_segments);//get the current angle
+	
+      float x = r * cosf(theta);//calculate the x component
+      float z = r * sinf(theta);//calculate the y component
+      
+      glVertex3f(x + cx, 0, z + cz);//output vertex
+
+    }
+    glEnd();
 }
 
 GLfloat distance(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2){
@@ -62,16 +99,22 @@ void changePosition(GLfloat x, GLfloat z){
 }
 
 void handleKeys(){
-  if(keys['w'])
-    mainCamera.move(0);
-  if(keys['s'])
+  if(keys['w']){
+    if(!(distance(mainCamera.x, 0, mainCamera.z, ball.x, 0, ball.z) < zoneRadius/2.0f)){
+      mainCamera.move(0);
+    }
+  }
+  if(keys['x'])
     mainCamera.move(180);
-  if(leftKey)
+  if(leftKey){
     mainCamera.rotate(1, true);
-  if(rightKey)
-    mainCamera.rotate(358, true);
-  if(upKey)
-    mainCamera.rotate(2, false);
+  }
+  if(rightKey){
+    mainCamera.rotate(-1, true);
+  }
+  if(upKey){
+    mainCamera.rotate(1, false);
+  }
   if(downKey)
     mainCamera.rotate(-1, false);
 }
@@ -90,7 +133,36 @@ GLvoid resize(GLsizei width, GLsizei height)
   glutPostRedisplay();
 }
 
+void shootBall(){
+  GLfloat deltaX = mainCamera.tX - mainCamera.x;
+  GLfloat deltaY = mainCamera.tY - mainCamera.y;
+  GLfloat deltaZ = mainCamera.tZ - mainCamera.z;
+  GLfloat magnitude = sqrt(pow(deltaX, 2.0f) + pow(deltaY, 2.0f) + pow(deltaZ, 2.0f));
+  GLfloat strength = 1.5f;
+  
+  ball.move(strength * deltaX/magnitude, strength * deltaY/magnitude,strength * deltaZ/magnitude);
+}
+
+void drawArrow(){
+  glPushMatrix();
+  glColor3f(0.0,0.0,1.0);
+  GLfloat size = 2.0f;
+  GLfloat vetorX = (mainCamera.tX - ball.x);
+  GLfloat vetorZ = (mainCamera.tZ - ball.z);
+  GLfloat magnitude = sqrt(pow(vetorX, 2.0f) + pow(vetorZ, 2.0f));
+  
+  
+  glLineWidth(5.0f);
+  
+  glBegin(GL_LINES);
+  //glVertex3f(ball.x, 0, ball.z);
+  //  glVertex3f(ball.x + vetorX*size/magnitude, arrowAngle, ball.z + vetorZ*size/magnitude);
+  glEnd();
+  glPopMatrix();
+}
+
 void drawField(){
+  glEnable(GL_COLOR_MATERIAL);
   glPushMatrix();
   glColor3f(1,1,1);
   
@@ -140,22 +212,45 @@ void draw(void){
 
   mainCamera.draw();
 
-  drawField();
   ball.draw();
+  drawArrow();
+  drawField();
   
   glutSwapBuffers();
 
 }
 
+
+
 void keyboard(unsigned char key, int x, int y){
+  GLfloat distanceToBall = distance(mainCamera.x, mainCamera.y, mainCamera.z, ball.x, ball.y, ball.z);
   if(key == 'r'){
     GLfloat _x = random(-7.62, 7.62);
     GLfloat _z = random(-7.62, 7.62);
     changePosition(_x,_z);
     return;
   }
-  if(key == 'e'){
-    ball.move(0,-0.08,0);
+  if(key == 'a' && distanceToBall <= zoneRadius){
+     GLfloat radianAngle = (PI * 1.0f) / 180.0f;
+     GLfloat deltaX = (ball.x - mainCamera.x);
+     GLfloat deltaZ = (ball.z - mainCamera.z);
+     GLfloat finalX= mainCamera.x + (deltaX * cos(radianAngle) + deltaZ * sin(radianAngle));
+     GLfloat finalZ = mainCamera.z + (-deltaX * sin(radianAngle) + deltaZ * cos(radianAngle));
+     ball.move(finalX - ball.x,  -0.15, finalZ - ball.z);
+  }
+  else if(key == 'd' && distanceToBall <= zoneRadius){
+    GLfloat radianAngle = (PI * -1.0f) / 180.0f;
+    GLfloat deltaX = (ball.x - mainCamera.x);
+    GLfloat deltaZ = (ball.z - mainCamera.z);
+    GLfloat finalX= mainCamera.x + (deltaX * cos(radianAngle) + deltaZ * sin(radianAngle));
+    GLfloat finalZ = mainCamera.z + (-deltaX * sin(radianAngle) + deltaZ * cos(radianAngle));
+    ball.move(finalX - ball.x,  -0.15 , finalZ - ball.z);
+  }
+  else if(key == 's'  && distanceToBall <= zoneRadius){
+    ball.move(0,-0.15,0);
+  }
+  if(key == ' '){
+    changeView();
   }
   keys[key] = true;
 }

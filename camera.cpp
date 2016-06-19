@@ -31,7 +31,6 @@ void Camera::rotate(GLfloat angle, bool horizontal){
   GLfloat radianAngle = (PI * angle) / 180.0f;
   GLfloat deltaX = (tX - x);
   GLfloat deltaZ = (tZ - z);
-  GLfloat deltaY = (tY - y);
   if(horizontal){
     tX = x + (deltaX * cos(radianAngle) + deltaZ * sin(radianAngle));
     tZ = z + (-deltaX * sin(radianAngle) + deltaZ * cos(radianAngle));

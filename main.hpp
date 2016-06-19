@@ -25,5 +25,7 @@
 
 #define CATCH_MODE 0
 #define TURNING_MODE 1
+#define ADJUST_MODE 2
+
 
 #endif

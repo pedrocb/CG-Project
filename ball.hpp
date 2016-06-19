@@ -23,6 +23,7 @@ public:
   GLfloat vel = 0.1;
   GLfloat vX = 0.0, vY = 0.0, vZ = 0.0;
   GLfloat radius = 0.1215;
+  bool locked = false;
   void move(GLfloat velX, GLfloat velY, GLfloat velZ);
   void update();
   void draw();

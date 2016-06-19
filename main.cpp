@@ -506,34 +506,74 @@ void drawBullding(){
 
   glPushMatrix();
 
-  glTranslatef(25, 2.5, 15);
-  glutSolidCube(5);
+  //glTranslatef(25, 2.5, 15);
+  //glutSolidCube(5);
   glPopMatrix();
 
 }
 
 void drawRoad(){
+  /*PASSEIO*/
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(19.5, 0, 0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -23);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 20);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 20);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -23);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glPushMatrix();
+  glColor4f(1,1,1,0);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(20.5, 0, -23);
+  glVertex3f(20.5, 0, 20);
+  glEnd();
+  glPopMatrix();
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[2]);
+  glPushMatrix();
+  glTranslatef(24.5, 0, 0);
+  glPushMatrix();
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-4, 0, -23);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-4, 0, 20);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(4, 0, 20);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(4 , 0, -23);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+  glPopMatrix();
 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D,textures[3]);
   glPushMatrix();
-
-  glTranslatef(20, 0, 0);
-
+  glTranslatef(29.5, 0, 0);
   glPushMatrix();
-
   glBegin(GL_QUADS);
-  glTexCoord2f(0.0f,0.0f); glVertex3f(-2, 0, -20);
-  glTexCoord2f(2.0f,0.0f);glVertex3f(-2, 0, 20);
-  glTexCoord2f(2.0f,2.0f);glVertex3f(2, 0, 20);
-  glTexCoord2f(0.0f,2.0f);glVertex3f(2, 0, -20);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -23);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 20);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 20);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -23);
   glEnd();
-
   glPopMatrix();
   glDisable(GL_TEXTURE_2D);
-
   glPopMatrix();
 
+  glPushMatrix();
+  glColor4f(1,1,1,0);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(28.5, 0, -23);
+  glVertex3f(28.5, 0, 20);
+  glEnd();
+  glPopMatrix();
 
 }
 

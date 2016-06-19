@@ -23,4 +23,7 @@
 #define GRAY2    0.93, 0.93, 0.93, 1.0
 #define PI 3.14159
 
+#define CATCH_MODE 0
+#define TURNING_MODE 1
+
 #endif

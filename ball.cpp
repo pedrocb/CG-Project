@@ -11,14 +11,16 @@ void Ball::move(GLfloat velX, GLfloat velY, GLfloat velZ){
 }
 
 void Ball::update(){
-  vY -= 0.015833f; //Gravity
-  x+=vX;
-  y+=vY;
-  z+=vZ;
-  if(y <= radius){
-    y = radius;
-    vY*= -1.0f;
-    vY*=0.800f;
+  if(!locked){
+    vY -= 0.015833f; //Gravity
+    x+=vX;
+    y+=vY;
+    z+=vZ;
+    if(y <= radius){
+      y = radius;
+      vY*= -1.0f;
+      vY*=0.800f;
+    }
   }
 }
 

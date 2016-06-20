@@ -2,8 +2,7 @@
 #include "camera.hpp"
 #include "ball.hpp"
 #include "render.hpp"
-
-
+#include <cstdlib>
 
 Camera mainCamera;
 Ball ball;
@@ -26,7 +25,6 @@ GLfloat playerX[2], playerZ[2];
 int currentPlayer = 0;
 int points[] = {3, 3};
 bool night = false;
-
 
 bool keys[256];
 bool leftKey = false, rightKey = false, upKey = false, downKey = false;
@@ -372,31 +370,23 @@ void shootBall(){
 }
 
 
-
-
-
-
-
-
-
-
-
 void draw(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
   
   
   //Perspective
 
- 
+  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(60.0, wScreen/hScreen, 0.1, 400.0);
+  glEnable(GL_COLOR_MATERIAL);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   render.print("ola", 30, 3);
   
-  render.drawSkybox();
   mainCamera.draw();
+  render.drawSkybox();
 
   
   render.drawField();

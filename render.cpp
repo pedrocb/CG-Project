@@ -740,7 +740,7 @@ void Render::drawRoad(){
   glBegin(GL_QUADS);
   glTexCoord2f(0.0f,0.0f); glVertex3f(-60.5, 0, -4);
   glTexCoord2f(8.0f,0.0f);glVertex3f(-60.5, 0, 4);
-  glTexCoord2f(.0f,65.5f);glVertex3f(65.5, 0, 4);
+  glTexCoord2f(8.0f,65.5f);glVertex3f(65.5, 0, 4);
   glTexCoord2f(0.0f,65.5f);glVertex3f(65.5 , 0, -4);
   glEnd();
   glPopMatrix();

@@ -1474,7 +1474,7 @@ void Render::drawBullding(int x, int y, int z, int xi, int zi){
 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D,textures[5]);
-
+  glColor3f(1.0,1.0,1.0);
   glPushMatrix();
   glTranslatef(xi, y, zi);
 

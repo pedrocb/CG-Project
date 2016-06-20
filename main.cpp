@@ -11,7 +11,7 @@ bool ball_inside;
 
 GLfloat worldLimitX = 100.0, worldLimitZ = 50.0;
 GLfloat wScreen = 800.0, hScreen = 600.0;
-GLfloat ambientColor[4] =  {0.3,0.3,0.3};
+GLfloat ambientColor[4] =  {0.8,0.8,0.8};
 GLfloat directionVector[3];
 
 GLfloat draw_interval = 1000.0 / 30.0;
@@ -30,6 +30,8 @@ RgbImage imag;
 bool keys[256];
 bool leftKey = false, rightKey = false, upKey = false, downKey = false;
 
+GLfloat distance(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
+
 GLfloat random(GLfloat minimo, GLfloat maximo){	
   GLfloat y;
   y = rand()%1000;
@@ -39,7 +41,7 @@ void defineTextures(){
 
   glGenTextures(1, &textures[0]); 
   glBindTexture(GL_TEXTURE_2D, textures[0]); 
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
@@ -51,7 +53,7 @@ void defineTextures(){
 
   glGenTextures(1, &textures[1]); 
   glBindTexture(GL_TEXTURE_2D, textures[1]); 
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
@@ -61,7 +63,7 @@ void defineTextures(){
 
   glGenTextures(1, &textures[2]); 
   glBindTexture(GL_TEXTURE_2D, textures[2]); 
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
@@ -71,13 +73,24 @@ void defineTextures(){
 
   glGenTextures(1, &textures[3]); 
   glBindTexture(GL_TEXTURE_2D, textures[3]); 
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
   imag.LoadBmpFile("calcada.bmp"); 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+  
+  glGenTextures(1, &textures[4]); 
+  glBindTexture(GL_TEXTURE_2D, textures[4]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("pista.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
 }
 void changeView(){
   playerX = mainCamera.x;
@@ -120,7 +133,7 @@ void drawArrow(){
   
   glColor3f(0.3,0.6,2.0);
   glPushMatrix();
-  glTranslatef(ball.x, 0, ball.z);
+  glTranslatef(ball.x, ball.y, ball.z);
   GLfloat aux;
   if(ball.x > 0)
     aux = -angleY;
@@ -150,7 +163,13 @@ void lights(void){
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientColor);
   GLfloat position[] = { mainCamera.x,1.8,mainCamera.z, 1.0};
   GLfloat direction[] = { 0.0, -1.0, 0.0 };
-  GLfloat color[] = {0.0,1.0,1.0,1.0};
+  GLfloat color[] =  {0.0,0.0,0.0,1.0};
+  if(distance(ball.x, 0, ball.z, 0,0,15) < distance(mainCamera.x, 0, mainCamera.z, 0, 0, 15)){
+    color[1] = 1.0;
+  }
+  else{
+    color[0] = 1.0;
+  }
 
   GLfloat angle = atan(zoneRadius/1.8f) * 180.0f/PI;
   
@@ -181,11 +200,10 @@ void init(void)
   glShadeModel(GL_SMOOTH);
   defineTextures(); 
   glEnable(GL_TEXTURE_2D);
-  
-  glEnable(GL_LIGHTING);
-  glEnable(GL_DEPTH_TEST);
-  glShadeModel(GL_FLAT);
   glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_DEPTH_TEST);
   lights();
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
@@ -250,9 +268,15 @@ void handleKeys(){
   if(keys['s'] && mode == ADJUST_MODE){
     arrowAngle--;
   }
-  if(keys[' '] && mode == ADJUST_MODE){
-    strength+=0.01;
+  if(keys['a'] && mode == ADJUST_MODE){
+    strength -= 0.01;
+    if(strength<0.5) strength = 0.5;
   }
+  if(keys['d'] && mode == ADJUST_MODE){
+    strength+=0.01;
+    if(strength>10) strength = 10;
+  }
+    
   if(keys['x'])
     mainCamera.move(180);
   if(leftKey){
@@ -371,7 +395,6 @@ void drawFieldLines(){
   glPushMatrix();
   glColor3f(1,0,0);
   glLineWidth(20);
-  glPushMatrix();
   glBegin(GL_LINES);
   glVertex3f(-6.1, 0, 15);
   glVertex3f(-6.1, 0, 12.0);
@@ -456,7 +479,7 @@ void drawFieldLines(){
 
   int i;
   glPushMatrix();
-  glColor4f(1.0,1.0,0.0,0.0);
+  glColor4f(1.0,1.0,0.0,1.0);
   glTranslatef(-9.5,0.0,3.5*side);
   
   for(i = 0; i < 10;i++){
@@ -467,7 +490,7 @@ void drawFieldLines(){
   glPopMatrix();
   
   glPushMatrix();
-  glColor4f(1.0,0.0,0.0,0.0);
+  glColor4f(1.0,0.0,0.0,1.0);
   glTranslatef(-10.5,0.5,3.5*side);
   for(i = 0; i < 10;i++){
     glTranslatef(0,0,1*side);
@@ -477,7 +500,7 @@ void drawFieldLines(){
   glPopMatrix();
 
   glPushMatrix();
-  glColor4f(1.0,1.0,0.0,0.0);
+  glColor4f(1.0,1.0,0.0,1.0);
   glTranslatef(-11.5,0.0,3.5*side);
   for(i = 0; i < 10;i++){
     glTranslatef(0,0,1*side);
@@ -488,7 +511,7 @@ void drawFieldLines(){
 
 
   glPushMatrix();
-  glColor4f(1.0,1.0,0.0,0.0);
+  glColor4f(1.0,1.0,0.0,1.0);
   glTranslatef(-11.5,1.0,3.5*side);
   for(i = 0; i < 10;i++){
     glTranslatef(0,0,1*side);
@@ -501,18 +524,23 @@ void drawFieldLines(){
 
 
 void drawPaisagem(){
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[4]);
+  glPushMatrix();
+  glTranslatef(11.5,0,0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-3, 0, -16);
+  glTexCoord2f(20.0f,0.0f); glVertex3f(-3, 0, 16);
+  glTexCoord2f(20.0f,10.0f); glVertex3f(3, 0, 16);
+  glTexCoord2f(0.0f,10.0f); glVertex3f(3, 0, -16);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
 
   glPushMatrix();
   glTranslatef(11.5,0,0);
-  glColor4f(255, 43, 0, 0);
-  glBegin(GL_QUADS);
-  glVertex3f(-3, 0, -16);
-  glVertex3f(-3, 0, 16);
-  glVertex3f(3, 0, 16);
-  glVertex3f(3, 0, -16);
-  glEnd();
-
-  glColor4f(1,0,0,0);
+  glLineWidth(10);
+  glColor4f(1,0,0,1);
   glBegin(GL_LINES);
   glVertex3f(-1.5, 0, -16);
   glVertex3f(-1.5, 0, 16);
@@ -552,7 +580,7 @@ void drawPaisagem(){
   glBegin(GL_LINES);
   glVertex3f(3, 0, -15);
   glVertex3f(-3, 0, -15);
-
+  glEnd();
 
 
   glEnable(GL_TEXTURE_2D);
@@ -589,6 +617,7 @@ void drawPaisagem(){
   glEnd();
 
   glPopMatrix();
+  glBindTexture(GL_TEXTURE_2D,0);
   glDisable(GL_TEXTURE_2D);
 
   glEnable(GL_TEXTURE_2D);
@@ -661,13 +690,130 @@ void drawPaisagem(){
 }
 
 
-void drawBullding(){
+void drawBullding(int x, int y, int z, int xi, int zi){
 
   glPushMatrix();
+  glTranslatef(xi, y, zi);
 
-  //glTranslatef(25, 2.5, 15);
-  //glutSolidCube(5);
+   glBegin(GL_QUADS);                // Begin drawing the color cube with 6 quads
+      // Top face (y = 1.0f)
+      // Define vertices in counter-clockwise (CCW) order with normal pointing out
+      glColor3f(0.0f, 1, 0);     // Green
+      glVertex3f( x, y, -z);
+      glVertex3f(-x, y, -z);
+      glVertex3f(-x, y,  z);
+      glVertex3f( x, y,  z);
+ 
+      // Bottom face (y = -1.0f)
+      glColor3f(1.0f, 0.5f, 0.0f);     // Orange
+      glVertex3f( x, -y,  z);
+      glVertex3f(-x, -y,  z);
+      glVertex3f(-x, -y, -z);
+      glVertex3f( x, -y, -z);
+ 
+      // Front face  (z = 1.0f)
+      glColor3f(1.0f, 0.0f, 0.0f);     // Red
+      glVertex3f( x,  y, z);
+      glVertex3f(-x,  y, z);
+      glVertex3f(-x, -y, z);
+      glVertex3f( x, -y, z);
+ 
+      // Back face (z = -1.0f)
+      glColor3f(1.0f, 1.0f, 0.0f);     // Yellow
+      glVertex3f( x, -y, -z);
+      glVertex3f(-x, -y, -z);
+      glVertex3f(-x,  y, -z);
+      glVertex3f( x,  y, -z);
+ 
+      // Left face (x = -1.0f)
+      glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+      glVertex3f(-x,  y,  z);
+      glVertex3f(-x,  y, -z);
+      glVertex3f(-x, -y, -z);
+      glVertex3f(-x, -y,  z);
+ 
+      // Right face (x = 1.0f)
+      glColor3f(1.0f, 0.5f, 0.0f);     // Magenta
+      glVertex3f(x,  y, -z);
+      glVertex3f(x,  y,  z);
+      glVertex3f(x, -y,  z);
+      glVertex3f(x, -y, -z);
+    glEnd();
+    glColor3f(1.0f, 0.0f, 1.0f);
+    int zaux = (-z)+1;
+    int yaux = (-y)+3;
+    while(yaux<(y)){
+      zaux = (-z)+1;
+      while(zaux < z){
+
+      glBegin(GL_QUADS);
+      glVertex3f(-x-0.01,  yaux+0.5,  zaux+0.5);
+      glVertex3f(-x-0.01,  yaux+0.5, zaux-0.5);
+      glVertex3f(-x-0.01, yaux-0.5, zaux-0.5);
+      glVertex3f(-x-0.01, yaux-0.5,  zaux+0.5);
+      glEnd();
+      zaux += 2;
+      }
+    
+      yaux += 2;
+    }
+
+    int xaux = (-x)+1;
+    yaux = (-y)+3;
+    while(yaux<(y)){
+      xaux = (-x)+1;
+      while(xaux < x){
+
+      glBegin(GL_QUADS);
+      glVertex3f(xaux+0.5,  yaux+0.5,-z-0.01);
+      glVertex3f(xaux-0.5,  yaux+0.5,-z-0.01);
+      glVertex3f(xaux-0.5, yaux-0.5,-z-0.01);
+      glVertex3f(xaux+0.5, yaux-0.5,-z-0.01);
+      glEnd();
+      xaux += 2;
+      }
+    
+      yaux += 2;
+    }
+
+    zaux = (z)-1;
+    yaux = (-y)+3;
+    while(yaux<(y)){
+      while(zaux > -z){
+
+      glBegin(GL_QUADS);
+      glVertex3f(x+0.01,  yaux+0.5,  zaux-0.5);
+      glVertex3f(x+0.01,  yaux+0.5, zaux+0.5);
+      glVertex3f(x+0.01, yaux-0.5, zaux+0.5);
+      glVertex3f(x+0.01, yaux-0.5,  zaux-0.5);
+      glEnd();
+      zaux -= 2;
+      }
+    
+      zaux = (z)-1;
+      yaux += 2;
+    }
+
+    xaux = (x)-1;
+    yaux = (-y)+3;
+    while(yaux<(y)){
+      while(xaux > -x){
+
+      glBegin(GL_QUADS);
+      glVertex3f(xaux+0.5, yaux+0.5, z+0.01);
+      glVertex3f(xaux-0.5, yaux+0.5, z+0.01);
+      glVertex3f(xaux-0.5, yaux-0.5, z+0.01);
+      glVertex3f(xaux+0.5, yaux-0.5, z+0.01);
+      glEnd();
+      xaux -= 2;
+      }
+    
+      xaux = (x)-1;
+      yaux += 2;
+    }
+
   glPopMatrix();
+
 
 }
 
@@ -697,8 +843,8 @@ void drawRoad(){
   glColor4f(1,1,1,0);
   glLineWidth(7);
   glBegin(GL_LINES);
-  glVertex3f(20.5, 0, -23);
-  glVertex3f(20.5, 0, 20);
+  glVertex3f(20.5, 0, -25);
+  glVertex3f(20.5, 0, 22);
   glEnd();
   glPopMatrix();
 
@@ -706,20 +852,32 @@ void drawRoad(){
   glBindTexture(GL_TEXTURE_2D,textures[2]);
   glPushMatrix();
   glTranslatef(24.5, 0, 0);
-  glPushMatrix();
 
   glBegin(GL_QUADS);
   glNormal3f(0,1,0);
-  glTexCoord2f(0.0f,0.0f); glVertex3f(-4, 0, -23);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-4, 0, -25);
   glNormal3f(0,1,0);
-  glTexCoord2f(20.0f,0.0f);glVertex3f(-4, 0, 20);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-4, 0, 22);
   glNormal3f(0,1,0);
-  glTexCoord2f(20.0f,10.0f);glVertex3f(4, 0, 20);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(4, 0, 22);
   glNormal3f(0,1,0);
-  glTexCoord2f(0.0f,10.0f);glVertex3f(4 , 0, -23);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(4 , 0, -25);
+
   glEnd();
   glPopMatrix();
   glDisable(GL_TEXTURE_2D);
+
+  int i;
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glTranslatef(24.5, 0, -23);
+  for(i = 0; i<9; i++){
+    glBegin(GL_LINES);
+    glVertex3f(0, 0, 1);
+    glVertex3f(0, 0, 3);
+    glEnd();
+    glTranslatef(0, 0, 5);
+  }
   glPopMatrix();
 
 
@@ -728,7 +886,38 @@ void drawRoad(){
   glBindTexture(GL_TEXTURE_2D,textures[3]);
   glPushMatrix();
   glTranslatef(29.5, 0, 0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -25);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 22);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 22);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -25);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
   glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(20.5, 0, -25);
+  glVertex3f(20.5, 0, 22);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(28.5, 0, -25);
+  glVertex3f(28.5, 0, 22);
+  glEnd();
+  glPopMatrix();
+
+  /*PASSEIO*/
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(-13.5, 0, 0);
   glBegin(GL_QUADS);
   glNormal3f(0,1.0f,0);
   glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -23);
@@ -741,26 +930,380 @@ void drawRoad(){
   glEnd();
   glPopMatrix();
   glDisable(GL_TEXTURE_2D);
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(-14.5, 0, -25);
+  glVertex3f(-14.5, 0, 22);
+  glEnd();
+  glPopMatrix();
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[2]);
+  glPushMatrix();
+  glTranslatef(-18.5, 0, 0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-4, 0, -25);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-4, 0, 22);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(4, 0, 22);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(4 , 0, -25);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glTranslatef(-18.5, 0, -23);
+  for(i = 0; i<9; i++){
+    glBegin(GL_LINES);
+    glVertex3f(0, 0, 1);
+    glVertex3f(0, 0, 3);
+    glEnd();
+    glTranslatef(0, 0, 5);
+  }
+  glPopMatrix();
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(-23.5, 0, 0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -25);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 22);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 22);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -25);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(-14.5, 0, -25);
+  glVertex3f(-14.5, 0, 22);
+  glEnd();
   glPopMatrix();
 
   glPushMatrix();
-  glColor4f(1,1,1,0);
+  glColor4f(1,1,1,1);
   glLineWidth(7);
   glBegin(GL_LINES);
-  glVertex3f(28.5, 0, -23);
-  glVertex3f(28.5, 0, 20);
+  glVertex3f(-22.5, 0, -25);
+  glVertex3f(-22.5, 0, 22);
+  glEnd();
+  glPopMatrix();
+
+   /*PASSEIO*/
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(0, 0, -24);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(0, 0, 21);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(-14.5, 0, -25);
+  glVertex3f(20.5, 0, -25);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(-14.5, 0, 22);
+  glVertex3f(20.5, 0, 22);
   glEnd();
   glPopMatrix();
   
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[2]);
+  glPushMatrix();
+  glTranslatef(0, 0, -29);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-45.5, 0, -4);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-45.5, 0, 4);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(50.5, 0, 4);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(50.5 , 0, -4);
+  glEnd();
+  glPopMatrix();
+
+  glDisable(GL_TEXTURE_2D);
+
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[2]);
+  glPushMatrix();
+  glTranslatef(0, 0, 26);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-45.5, 0, -4);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-45.5, 0, 4);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(50.5, 0, 4);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(50.5 , 0, -4);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glTranslatef(-18.5, 0, -29);
+  for(i = 0; i<13; i++){
+    glBegin(GL_LINES);
+    glVertex3f(1, 0, 0);
+    glVertex3f(3, 0, 0);
+    glEnd();
+    glTranslatef(5, 0, 0);
+  }
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glTranslatef(-18.5, 0, 26);
+  for(i = 0; i<13; i++){
+    glBegin(GL_LINES);
+    glVertex3f(1, 0, 0);
+    glVertex3f(3, 0, 0);
+    glEnd();
+    glTranslatef(5, 0, 0);
+  }
+  glPopMatrix();
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(0, 0, -34);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(0, 0, 31);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(19.5, 0, 52);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -21);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 22);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 22);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -21);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(-14, 0, 52);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -21);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 22);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 22);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -21);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(19.5, 0, -55);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -21);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 22);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 22);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -21);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(-14, 0, -55);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-1, 0, -21);
+  glTexCoord2f(15.0f,0.0f);glVertex3f(-1, 0, 22);
+  glTexCoord2f(15.0f,1.0f);glVertex3f(1, 0, 22);
+  glTexCoord2f(0.0f,1.0f);glVertex3f(1, 0, -21);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(-43, 0, -24);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(-45, 0, 21);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(43, 0, -24);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[3]);
+  glPushMatrix();
+  glTranslatef(45, 0, 21);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-14.5, 0, -1);
+  glTexCoord2f(0.5f,0.0f);glVertex3f(-14.5, 0, 1);
+  glTexCoord2f(0.5f,17.0f);glVertex3f(20.5, 0, 1) ;
+  glTexCoord2f(0.0f,17.0f);glVertex3f(20.5, 0, -1);
+  glEnd();
+  glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+
+
+
+
+  /*CANTEIRO DE RELVA*/
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[0]);
+  glPushMatrix();
+  glTranslatef(0, 0, 42);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-13, 0, -10);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-13, 0, 50);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(18.5, 0, 50);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(18.5 , 0, -10);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(0, 0, -85);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-13, 0, -10);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-13, 0, 50);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(18.5, 0, 50);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(18.5 , 0, -10);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(44, 0, -14);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-13.5, 0, -9);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-13.5, 0, 34);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(18.5, 0, 34);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(18.5 , 0, -9);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(-43, 0, -14);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f,0.0f); glVertex3f(-13.5, 0, -9);
+  glTexCoord2f(20.0f,0.0f);glVertex3f(-13.5, 0, 34);
+  glTexCoord2f(20.0f,10.0f);glVertex3f(18.5, 0, 34);
+  glTexCoord2f(0.0f,10.0f);glVertex3f(18.5 , 0, -9);
+  glEnd();
+  glPopMatrix();
+  glBindTexture(GL_TEXTURE_2D,0);
+  glDisable(GL_TEXTURE_2D);
+
+
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(-14.5, 0, -33);
+  glVertex3f(20.5, 0, -33);
+  glEnd();
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor4f(1,1,1,1);
+  glLineWidth(7);
+  glBegin(GL_LINES);
+  glVertex3f(-14.5, 0, 30);
+  glVertex3f(20.5, 0, 30);
+  glEnd();
+  glPopMatrix();
+
+
 }
 
-void drawField(){
-  
+void drawField(){  
   glPushMatrix();
-
+  glDisable(GL_TEXTURE_2D);
   glColor4f(0.2,0.2,0.2,1);
-  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  //  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);
+  glBindTexture(GL_TEXTURE_2D, 0); 
   GLfloat num_pol = 200.0f;
   glNormal3f(0.0, 1.0, 0.0);
   for(GLfloat line = 0.0f; line< num_pol; line++){
@@ -816,18 +1359,6 @@ void drawField(){
   
 
   /*tabela*/
-  glPushMatrix();
-
-  glColor4f(1,1,1,1);
-  glRotatef(-90,1,0,0);
-  glTranslatef(0.0,0.0,(2.9+0.75));
-  glBegin(GL_QUADS);
-  glVertex3f(-1.5, 15, -0.75);
-  glVertex3f(-1.5, 15, 0.75);
-  glVertex3f(1.5, 15, 0.75);
-  glVertex3f(1.5, 15, -0.75);
-  glEnd();
-  glPopMatrix();
 
   /*quadrado tabela*/
   glPushMatrix();
@@ -861,18 +1392,6 @@ void drawField(){
   glPopMatrix();
 
   /*2tabela*/
-  glPushMatrix();
-
-  glColor4f(1,1,1,1);
-  glRotatef(-90,1,0,0);
-  glTranslatef(0.0,0.0,(2.9+0.75));
-  glBegin(GL_QUADS);
-  glVertex3f(-1.5, -15, -0.75);
-  glVertex3f(-1.5, -15, 0.75);
-  glVertex3f(1.5, -15, 0.75);
-  glVertex3f(1.5, -15, -0.75);
-  glEnd();
-  glPopMatrix();
 
   /*quadrado tabela*/
   glPushMatrix();
@@ -904,11 +1423,24 @@ void drawField(){
   drawHollowCircle(0, 0, 0.35, 1);
   drawHollowCircle(0, 0, 0.35, -1);
   glPopMatrix();
-
   drawPaisagem();
-  drawBullding();
+
+  drawBullding(4, 9, 5, 36, 13);
+  drawBullding(9, 9, 6, -36, -15);
+
+  drawBullding(4, 9, 6, 36, -6);
+  drawBullding(9, 9, 6, -36, 10);
+
+  drawBullding(4, 9, 6, -8, -45);
+  drawBullding(9, 11, 6, 7, 45);
+
+  drawBullding(6, 12, 6, 12, -45);
+  drawBullding(3, 7, 6, -9, 45);
+
   drawRoad();
 }
+
+
 
 void draw(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -924,17 +1456,72 @@ void draw(void){
   mainCamera.draw();
 
   
+  drawField();
   ball.draw();
   
   lights();
   glEnable(GL_LIGHTING);
   glPushMatrix();
-  drawField();
   glPopMatrix();
   //  if(mode == ADJUST_MODE){
-    drawArrow();
+  drawArrow();
     //}
+  if(mainCamera.z > 0){
+    glPushMatrix();
+    glEnable(GL_BLEND);
+    glColor4f(0.1,0.1,0.1,0.5);
+    glRotatef(-90,1,0,0);
+    glTranslatef(0.0,0.0,(2.9+0.75));
+    glBegin(GL_QUADS);
+    glVertex3f(-1.5, 15, -0.75);
+    glVertex3f(-1.5, 15, 0.75);
+    glVertex3f(1.5, 15, 0.75);
+    glVertex3f(1.5, 15, -0.75);
+    glEnd();
+    glPopMatrix();
 
+    glPushMatrix();
+    glColor4f(0,1,0,0.5f);
+    glRotatef(-90,1,0,0);
+    glTranslatef(0.0,0.0,(2.9+0.75));
+    glBegin(GL_QUADS);
+    glVertex3f(-1.5, -15, -0.75);
+    glVertex3f(-1.5, -15, 0.75);
+    glVertex3f(1.5, -15, 0.75);
+    glVertex3f(1.5, -15, -0.75);
+    glEnd();
+    glPopMatrix();
+
+  }
+  else{
+    glPushMatrix();
+    glColor4f(0,1,0,0.5f);
+    glRotatef(-90,1,0,0);
+    glTranslatef(0.0,0.0,(2.9+0.75));
+    glBegin(GL_QUADS);
+    glVertex3f(-1.5, -15, -0.75);
+    glVertex3f(-1.5, -15, 0.75);
+    glVertex3f(1.5, -15, 0.75);
+    glVertex3f(1.5, -15, -0.75);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glEnable(GL_BLEND);
+    glColor4f(0.1,0.1,0.1,0.5);
+    glRotatef(-90,1,0,0);
+    glTranslatef(0.0,0.0,(2.9+0.75));
+    glBegin(GL_QUADS);
+    glVertex3f(-1.5, 15, -0.75);
+    glVertex3f(-1.5, 15, 0.75);
+    glVertex3f(1.5, 15, 0.75);
+    glVertex3f(1.5, 15, -0.75);
+    glEnd();
+    glPopMatrix();
+
+  }
+  glDisable(GL_BLEND);
+  
   glutSwapBuffers();
   
 }
@@ -1010,16 +1597,17 @@ void timer(int) {
 }
 
 void keyboardUp(unsigned char key, int x, int y){
-  if(key == 'q' && mode == ADJUST_MODE){
+  if(key == ' ' && mode == ADJUST_MODE){
     ball.locked = false;
     shootBall();
-    mode = TURNING_MODE;
-   
+    mode = -1;
   }
   if(key == ' ' && mode == TURNING_MODE){
-    ball.locked = true;
-    mode = ADJUST_MODE;
-    changeView();
+    if(distance(ball.x, 0, ball.z, 0,0,15) < distance(mainCamera.x, 0, mainCamera.z, 0, 0, 15)){
+      ball.locked = true;
+      mode = ADJUST_MODE;
+      changeView();
+    }
   }
 
   keys[key] = false;

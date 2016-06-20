@@ -36,7 +36,7 @@ void Render::drawField(){  glPushMatrix();
   drawFieldLines();
   
   glPushMatrix();
-  glColor4f(1.0,0.0,0.0,1.0);
+  glColor4f(0.7,0.0,0.0,1.0);
   glTranslatef(0.0,0.0,15);
   glRotatef(-90,1,0,0);
   
@@ -48,7 +48,7 @@ void Render::drawField(){  glPushMatrix();
   glPopMatrix();
   
   glPushMatrix();
-  glColor4f(1.0,0.0,0.0,1.0);
+  glColor4f(0.7,0.0,0.0,1.0);
   glTranslatef(0.0,0.0,-15);
   glRotatef(-90,1,0,0);
   
@@ -61,7 +61,7 @@ void Render::drawField(){  glPushMatrix();
   
   
   glPushMatrix();
-  glColor4f(1.0,0.0,0.0,1.0);
+  glColor4f(0.7,0.0,0.0,1.0);
   glTranslatef(0.0,0.0,-15);
   glRotatef(-90,1,0,0);
 
@@ -77,7 +77,7 @@ void Render::drawField(){  glPushMatrix();
 
   /*quadrado tabela*/
   glPushMatrix();
-  glColor4f(1,0,0,1);
+  glColor4f(0.7,0,0,1);
   glLineWidth(5);
   glRotatef(-90,1,0,0);
   glTranslatef(0.0,0.0,(2.9+0.375));
@@ -110,7 +110,7 @@ void Render::drawField(){  glPushMatrix();
 
   /*quadrado tabela*/
   glPushMatrix();
-  glColor4f(1,0,0,1);
+  glColor4f(0.7,0,0,1);
   glLineWidth(5);
   glRotatef(-90,1,0,0);
   glTranslatef(0.0,0.0,(2.9+0.375));
@@ -248,7 +248,7 @@ void Render::drawPaisagem(){
   glPushMatrix();
   glTranslatef(11.5,0,0);
   glLineWidth(10);
-  glColor4f(1,0,0,1);
+  glColor4f(0.7,0,0,1);
   glBegin(GL_LINES);
   glVertex3f(-1.5, 0, -16);
   glVertex3f(-1.5, 0, 16);
@@ -293,7 +293,7 @@ void Render::drawPaisagem(){
 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D,textures[1]);
-
+  glColor3f(1.0f,1.0f,1.0f);
   glTranslatef(0,0,-19);
 
   glBegin(GL_QUADS);
@@ -1129,7 +1129,7 @@ void Render::drawRoad(){
 void Render::drawFieldLines(){
   glLineWidth(20);
   glPushMatrix();
-  glColor3f(1,0,0);
+  glColor3f(0.7,0,0);
   glBegin(GL_LINES);
   glVertex3f(-6.1, 0, -15);
   glVertex3f(-6.1, 0, -12.0);
@@ -1185,7 +1185,7 @@ void Render::drawFieldLines(){
 
   /*2 METADE*/
   glPushMatrix();
-  glColor3f(1,0,0);
+  glColor3f(0.7,0,0);
   glLineWidth(20);
   glBegin(GL_LINES);
   glVertex3f(-6.1, 0, 15);

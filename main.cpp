@@ -20,7 +20,8 @@ GLfloat arrowAngle = 30.0f;;
 GLfloat strength = 1.0f;
 
 int mode = CATCH_MODE;
-
+bool scored = false;
+bool keep = false;
 GLfloat playerX[2], playerZ[2];
 int currentPlayer = 0;
 int points[] = {3, 3};
@@ -30,7 +31,7 @@ bool keys[256];
 bool leftKey = false, rightKey = false, upKey = false, downKey = false;
 
 GLfloat distance(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
-
+void changePosition(GLfloat x, GLfloat z);
 GLfloat random(GLfloat minimo, GLfloat maximo){	
   GLfloat y;
   y = rand()%1000;
@@ -149,10 +150,14 @@ void lights(void){
   }
   angle = 180.0f;
   GLfloat position1[4] = {8.0,5.0,-15,1.0f};
-  GLfloat color1[3] = {1.5,1.5,1.5};
+  GLfloat color1[3] = {1.0,1.0,1.0};
   GLfloat direction1[4] = {-12.25f,-5.0f,4.0f,1.0f};
   glPushMatrix();
-  glColor3f(1.0,1.0,1.0);
+  if(scored){
+    glColor3f(0.5,1.0,0.5);
+  }else{
+    glColor3f(1.0,0.5,0.5);
+  }
   glTranslatef(position1[0],position1[1],position1[2]);
   glutSolidSphere(0.5,50,50);
   glPopMatrix();
@@ -169,10 +174,9 @@ void lights(void){
   glLightf(GL_LIGHT1,GL_SPOT_EXPONENT, 3.0);
 
   GLfloat position2[4] = {-8,5.0,-15,1.0f};
-  GLfloat color2[3] = {1.5,1.5,1.5};
+  GLfloat color2[3] = {1.0,1.0,1.0};
   GLfloat direction2[4] = {12.75f,-5.0f,4.0f,1.0f};
   glPushMatrix();
-  glColor3f(1.0,1.0,1.0);
   glTranslatef(position2[0],position2[1],position2[2]);
   glutSolidSphere(0.5,50,50);
   glPopMatrix();
@@ -189,10 +193,9 @@ void lights(void){
   glLightf(GL_LIGHT2,GL_SPOT_EXPONENT, 3.0);
   
   GLfloat position3[4] = {-8,5.0,15,1.0f};
-  GLfloat color3[3] = {1.5,1.5,1.5};
+  GLfloat color3[3] = {1.0,1.0,1.0};
   GLfloat direction3[4] = {12.75f,-5.0f,-4.0f,1.0f};
   glPushMatrix();
-  glColor3f(1.0,1.0,1.0);
   glTranslatef(position3[0],position3[1],position3[2]);
   glutSolidSphere(0.5,50,50);
   glPopMatrix();
@@ -209,10 +212,9 @@ void lights(void){
   glLightf(GL_LIGHT3,GL_SPOT_EXPONENT, 3.0);
 
   GLfloat position4[4] = {8,5.0,15,1.0f};
-  GLfloat color4[3] = {1.5,1.5,1.5};
+  GLfloat color4[3] = {1.0,1.0,1.0};
   GLfloat direction4[4] = {-12.75f,-5.0f,-4.0f,1.0f};
   glPushMatrix();
-  glColor3f(1.0,1.0,1.0);
   glTranslatef(position4[0],position4[1],position4[2]);
   glutSolidSphere(0.5,50,50);
   glPopMatrix();
@@ -244,7 +246,8 @@ void init(void)
 {
   glClearColor(1.0,1.0,1.0,1.0);
   glShadeModel(GL_SMOOTH);
-  render.loadTextures(); 
+  render.loadTextures();
+  ball.loadTexture();
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_COLOR_MATERIAL);
   glEnable(GL_BLEND);
@@ -253,6 +256,10 @@ void init(void)
   lights();
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
+  GLfloat _x = random(-7.5, 7.5);
+  GLfloat _z = random(0, 13);
+  changePosition(_x,_z);
+
 }
 
 
@@ -350,8 +357,28 @@ void handleKeys(){
 
 void update(){
   handleKeys();
+  GLfloat oldX = ball.x;
+  GLfloat oldY = ball.y;
+  GLfloat oldZ = ball.z;
+  if(oldZ + ball.radius >= 15 && !keep){
+    scored = false;
+  }
   ball.update();
-  if(distance(mainCamera.x, 0, mainCamera.z, ball.x, 0, ball.z) < 1.0f){
+  if(distance(oldX, 0, oldZ, 0, 0, 14.65) < ball.radius + 0.35){
+    if(oldY > 3.05 && ball.y<= 3.05){
+      scored = true;
+    }
+  }
+  if(ball.z + ball.radius > 15){
+    if(ball.y + ball.radius >= 4.4f){
+      GLfloat _x = random(-7.5, 7.5);
+      GLfloat _z = random(0, 13);
+      ball.move(0,0,0);
+      ball.y = ball.radius;
+      changePosition(_x,_z);
+    }
+  }
+  if(distance(mainCamera.x, 0, mainCamera.z, ball.x, 0, ball.z) < 1.0f && !ball.locked){
     mode = TURNING_MODE;
   }
 }
@@ -384,7 +411,6 @@ void draw(void){
   glEnable(GL_COLOR_MATERIAL);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  render.print("ola", 30, 3);
   
   mainCamera.draw();
   render.drawSkybox();
@@ -398,6 +424,8 @@ void draw(void){
   if(mode == ADJUST_MODE){
     drawArrow();
   }
+  
+  
   if(mainCamera.z > 0){
     glPushMatrix();
     glEnable(GL_BLEND);
@@ -536,6 +564,7 @@ void timer(int) {
 void change_player(int){
   ball.locked = false;
   shootBall();
+  keep = false;
 }
 
 void keyboardUp(unsigned char key, int x, int y){

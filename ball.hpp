@@ -11,7 +11,7 @@
 
 #include<cmath>
 #include<stdio.h>
-
+#include "RgbImage.h"
 
 using namespace std;
 
@@ -24,9 +24,12 @@ public:
   GLfloat vX = 0.0, vY = 0.0, vZ = 0.0;
   GLfloat radius = 0.1215;
   bool locked = false;
+  GLuint texture;
+  RgbImage imag;
   void move(GLfloat velX, GLfloat velY, GLfloat velZ);
   void update();
   void draw();
+  void loadTexture();
 };
 
 #endif

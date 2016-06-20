@@ -32,8 +32,9 @@ void Camera::rotate(GLfloat angle, bool horizontal){
   if(horizontal){
     tX = x + (deltaX * cos(radianAngle) + deltaZ * sin(radianAngle));
     tZ = z + (-deltaX * sin(radianAngle) + deltaZ * cos(radianAngle));
+    
   }
   else{
-    tY += angle; //Mudar
+    tY += angle; //Mudar  
   }
 }

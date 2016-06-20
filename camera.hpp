@@ -21,7 +21,7 @@ public:
   Camera();
   ~Camera();
   GLfloat x = 5, y = 1.8, z = 4;
-  GLfloat vel = 0.1;
+  GLfloat vel = 0.4;
   GLfloat tX = 0.0, tY = 1.8, tZ = 0.0;
   int mode = 0;
   void move(GLfloat angle);

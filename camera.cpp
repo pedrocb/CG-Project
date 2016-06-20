@@ -5,8 +5,6 @@ Camera::Camera(){}
 Camera::~Camera(){}
 
 void Camera::draw(){
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
   gluLookAt(x, y, z, tX, tY, tZ, 0, 1, 0);
 }
 
@@ -14,12 +12,12 @@ void Camera::move(GLfloat angle){
   GLfloat deltaX = (tX - x);
   GLfloat deltaZ = (tZ - z);
   GLfloat radianAngle = (PI * angle) / 180.0f;
-  deltaX = deltaX * cos(radianAngle) + deltaZ * sin(radianAngle);
-  deltaZ = -deltaX * sin(radianAngle) + deltaZ * cos(radianAngle);
+  GLfloat new_vecX = deltaX * cos(radianAngle) + deltaZ * sin(radianAngle);
+  GLfloat new_vecZ = -deltaX * sin(radianAngle) + deltaZ * cos(radianAngle);
   
   GLfloat magnitude = sqrt(pow(deltaX, 2.0f) + pow(deltaZ, 2.0f));
-  GLfloat auxX = vel * deltaX/magnitude;
-  GLfloat auxZ = vel * deltaZ/magnitude;
+  GLfloat auxX = vel * new_vecX/magnitude;
+  GLfloat auxZ = vel * new_vecZ/magnitude;
   x += auxX;
   z += auxZ;
   

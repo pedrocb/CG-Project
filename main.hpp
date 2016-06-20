@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -26,6 +27,5 @@
 #define CATCH_MODE 0
 #define TURNING_MODE 1
 #define ADJUST_MODE 2
-
 
 #endif

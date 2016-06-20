@@ -18,23 +18,23 @@ void Ball::update(){
     z+=vZ;
     if(y <= radius){
       y = radius;
-      vY*= -1.0f;
-      vY*=0.800f;
+      vY*=-0.800f;
       vZ*=0.98f;
       vX*=0.98f;
     }
     if(z + radius > 15){
       z = 15 - radius;
-      vX*= -0.800f;
-      vZ*= -0.800f;
+      vX*= 0.500f;
+      vZ*= -0.500f;
+      vY*= 0.700f;
     }
     if(z - radius < -15){
-      z = -15 - radius;
-      vX*= -0.800f;
-      vZ*= -0.800f;
+      z = -15 + radius;
+      vX*= 0.500f;
+      vZ*= -0.500f;
+      vY*= 0.700f;
     }
   }
-  
 }
 
 void Ball::draw(){

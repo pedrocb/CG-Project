@@ -25,7 +25,7 @@ GLfloat playerX[2], playerZ[2];
 int currentPlayer = 0;
 int points[] = {3, 3};
 bool night = false;
-
+bool fog = false;
 bool keys[256];
 bool leftKey = false, rightKey = false, upKey = false, downKey = false;
 
@@ -51,7 +51,7 @@ void changeView(){
   }
   
   mainCamera.tX = ball.x + deltaX/2.0f;
-  mainCamera.tY = ball.y;
+  mainCamera.tY = 3;
   mainCamera.tZ = ball.z + deltaZ/2.0f;
   
   GLfloat auxX = (deltaX * cos(radianAngle) + deltaZ * sin(radianAngle));
@@ -131,9 +131,9 @@ void lights(void){
   glEnable(GL_LIGHT0);
   glLightfv(GL_LIGHT0,GL_POSITION, position);
   glLightfv(GL_LIGHT0,GL_DIFFUSE,color);
-  GLfloat Foco_ak			= 1.0;
-  GLfloat Foco_al			= 0.05f;
-  GLfloat Foco_aq			= 0.0f;
+  GLfloat Foco_ak = 1.0;
+  GLfloat Foco_al = 0.05f;
+  GLfloat Foco_aq = 0.0f;
   glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION,	Foco_ak);
   glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION,		Foco_al);
   glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,	Foco_aq);
@@ -147,9 +147,10 @@ void lights(void){
   else{
     glDisable(GL_LIGHT0);
   }
-  GLfloat position1[4] = {8.5,3.0,-12.0,1.0f};
-  GLfloat color1[3] = {3.0,3.0,3.0};
-  GLfloat direction1[3] = {-12.25f,-3.0f,4.0f};
+  angle = 180.0f;
+  GLfloat position1[4] = {8.0,5.0,-15,1.0f};
+  GLfloat color1[3] = {1.5,1.5,1.5};
+  GLfloat direction1[4] = {-12.25f,-5.0f,4.0f,1.0f};
   glPushMatrix();
   glColor3f(1.0,1.0,1.0);
   glTranslatef(position1[0],position1[1],position1[2]);
@@ -167,9 +168,9 @@ void lights(void){
   glLightfv(GL_LIGHT1,GL_SPOT_DIRECTION, direction1);
   glLightf(GL_LIGHT1,GL_SPOT_EXPONENT, 3.0);
 
-  GLfloat position2[4] = {-8.5,3.0,-12.0,1.0f};
-  GLfloat color2[3] = {3.0,3.0,3.0};
-  GLfloat direction2[3] = {12.75f,-3.0f,4.0f};
+  GLfloat position2[4] = {-8,5.0,-15,1.0f};
+  GLfloat color2[3] = {1.5,1.5,1.5};
+  GLfloat direction2[4] = {12.75f,-5.0f,4.0f,1.0f};
   glPushMatrix();
   glColor3f(1.0,1.0,1.0);
   glTranslatef(position2[0],position2[1],position2[2]);
@@ -187,9 +188,9 @@ void lights(void){
   glLightfv(GL_LIGHT2,GL_SPOT_DIRECTION, direction2);
   glLightf(GL_LIGHT2,GL_SPOT_EXPONENT, 3.0);
   
-  GLfloat position3[4] = {-8.5,3.0,12.0,1.0f};
-  GLfloat color3[3] = {3.0,3.0,3.0};
-  GLfloat direction3[3] = {12.75f,-3.0f,-4.0f};
+  GLfloat position3[4] = {-8,5.0,15,1.0f};
+  GLfloat color3[3] = {1.5,1.5,1.5};
+  GLfloat direction3[4] = {12.75f,-5.0f,-4.0f,1.0f};
   glPushMatrix();
   glColor3f(1.0,1.0,1.0);
   glTranslatef(position3[0],position3[1],position3[2]);
@@ -207,9 +208,9 @@ void lights(void){
   glLightfv(GL_LIGHT3,GL_SPOT_DIRECTION, direction3);
   glLightf(GL_LIGHT3,GL_SPOT_EXPONENT, 3.0);
 
-  GLfloat position4[4] = {8.5,3.0,12.0,1.0f};
-  GLfloat color4[3] = {3.0,3.0,3.0};
-  GLfloat direction4[3] = {-12.75f,-3.0f,-4.0f};
+  GLfloat position4[4] = {8,5.0,15,1.0f};
+  GLfloat color4[3] = {1.5,1.5,1.5};
+  GLfloat direction4[4] = {-12.75f,-5.0f,-4.0f,1.0f};
   glPushMatrix();
   glColor3f(1.0,1.0,1.0);
   glTranslatef(position4[0],position4[1],position4[2]);
@@ -341,10 +342,10 @@ void handleKeys(){
     mainCamera.rotate(-2, true);
   }
   if(upKey){
-    mainCamera.rotate(2, false);
+    mainCamera.rotate(1.5, false);
   }
   if(downKey)
-    mainCamera.rotate(-2, false);
+    mainCamera.rotate(-1.5, false);
 }
 
 void update(){
@@ -400,7 +401,7 @@ void draw(void){
   if(mainCamera.z > 0){
     glPushMatrix();
     glEnable(GL_BLEND);
-    glColor4f(0.1,0.1,0.1,0.5);
+    glColor4f(0.5,0.5,0.5,0.5);
     glRotatef(-90,1,0,0);
     glTranslatef(0.0,0.0,(2.9+0.75));
     glBegin(GL_QUADS);
@@ -412,7 +413,7 @@ void draw(void){
     glPopMatrix();
 
     glPushMatrix();
-    glColor4f(0,1,0,0.5f);
+    glColor4f(0.5,0.5,0.5,0.5f);
     glRotatef(-90,1,0,0);
     glTranslatef(0.0,0.0,(2.9+0.75));
     glBegin(GL_QUADS);
@@ -427,7 +428,7 @@ void draw(void){
   else{
     glPushMatrix();
     glEnable(GL_BLEND);	
-    glColor4f(0,1,0,0.5f);
+    glColor4f(0.5,0.5,0.5,0.5f);
     glRotatef(-90,1,0,0);
     glTranslatef(0.0,0.0,(2.9+0.75));
     glBegin(GL_QUADS);
@@ -439,7 +440,7 @@ void draw(void){
     glPopMatrix();
     
     glPushMatrix();
-    glColor4f(0.1,0.1,0.1,0.5);
+    glColor4f(0.5,0.5,0.5,0.5);
     glRotatef(-90,1,0,0);
     glTranslatef(0.0,0.0,(2.9+0.75));
     glBegin(GL_QUADS);
@@ -449,10 +450,17 @@ void draw(void){
     glVertex3f(1.5, 15, -0.75);
     glEnd();
     glPopMatrix();
-
+    
   }  
-  
   glDisable(GL_BLEND);
+  GLfloat colorN[3] = {0.2,0.2,0.2};
+  glFogfv(GL_FOG_COLOR, colorN); //Cor do nevoeiro
+  glFogi(GL_FOG_MODE, GL_EXP); //Equa‹o do nevoeiro - linear
+  glFogf(GL_FOG_START, 40.0); // Dist‰ncia a que ter‡ in’cio o nevoeiro
+  glFogf(GL_FOG_END, 60.0); // Dist‰ncia a que o nevoeiro terminar‡
+  glFogf (GL_FOG_DENSITY, 0.05);
+  if(fog)glEnable(GL_FOG);
+  else glDisable(GL_FOG);
   glutSwapBuffers();
   
 }
@@ -548,6 +556,10 @@ void keyboardUp(unsigned char key, int x, int y){
   if(key == 'n'){
     night = !night;
   }
+  if(key == 'f'){
+    fog = !fog;
+  }
+
   if(key == ' ' && mode == TURNING_MODE){
     if(distance(ball.x, 0, ball.z, 0,0,15) < distance(mainCamera.x, 0, mainCamera.z, 0, 0, 15)){
       ball.locked = true;

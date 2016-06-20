@@ -2,7 +2,7 @@
 #include "camera.hpp"
 #include "ball.hpp"
 #include "RgbImage.h"
-
+#include <cstdlib>
 
 Camera mainCamera;
 Ball ball;
@@ -23,7 +23,7 @@ int mode = CATCH_MODE;
 
 GLfloat playerX, playerZ = 0;
 
-GLuint  textures[5];
+GLuint  textures[8];
 RgbImage imag;
 
 
@@ -89,6 +89,36 @@ void defineTextures(){
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
   imag.LoadBmpFile("pista.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+  glGenTextures(1, &textures[5]); 
+  glBindTexture(GL_TEXTURE_2D, textures[5]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("wall1.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+  glGenTextures(1, &textures[6]); 
+  glBindTexture(GL_TEXTURE_2D, textures[6]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("wall2.bmp"); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
+
+  glGenTextures(1, &textures[7]); 
+  glBindTexture(GL_TEXTURE_2D, textures[7]); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+  imag.LoadBmpFile("wall3.bmp"); 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)imag.GetNumCols(), (int)imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE, imag.ImageData());
 
 }
@@ -689,60 +719,84 @@ void drawPaisagem(){
   drawSits(1);
 }
 
+void drawLights(int x, int z){
+
+  glPushMatrix();
+  glTranslatef(x, 0, z);
+
+  glColor4f(1.0,1.0,0.0,1.0);
+  glRotatef(-90,1,0,0);
+  
+  GLUquadric *quadric;
+  quadric = gluNewQuadric();
+  gluQuadricNormals(quadric, GLU_SMOOTH);
+  
+  gluCylinder(quadric,0.05,0.05,5,50,50);
+
+  //glTranslatef(0,5,0);
+  
+  //gluCylinder(quadric,0.05,0.05,5,50,50);
+
+  glPopMatrix();
+
+}
+
 
 void drawBullding(int x, int y, int z, int xi, int zi){
+
+  int tex = (rand()%3)+4;
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D,textures[5]);
 
   glPushMatrix();
   glTranslatef(xi, y, zi);
 
    glBegin(GL_QUADS);               
       
-      glColor3f(0.0f, 1, 0);     
       glVertex3f( x, y, -z);
       glVertex3f(-x, y, -z);
       glVertex3f(-x, y,  z);
       glVertex3f( x, y,  z);
  
-      glColor3f(1.0f, 0.5f, 0.0f);     
       glVertex3f( x, -y,  z);
       glVertex3f(-x, -y,  z);
       glVertex3f(-x, -y, -z);
       glVertex3f( x, -y, -z);
  
-      glColor3f(1.0f, 0.0f, 0.0f);     
       glVertex3f( x,  y, z);
       glVertex3f(-x,  y, z);
       glVertex3f(-x, -y, z);
       glVertex3f( x, -y, z);
  
-      glColor3f(1.0f, 1.0f, 0.0f);     
       glVertex3f( x, -y, -z);
       glVertex3f(-x, -y, -z);
       glVertex3f(-x,  y, -z);
       glVertex3f( x,  y, -z);
  
-      glColor3f(0.0f, 0.0f, 1.0f);     
       glVertex3f(-x,  y,  z);
       glVertex3f(-x,  y, -z);
       glVertex3f(-x, -y, -z);
       glVertex3f(-x, -y,  z);
  
-      glColor3f(1.0f, 0.5f, 0.0f);     
       glVertex3f(x,  y, -z);
       glVertex3f(x,  y,  z);
       glVertex3f(x, -y,  z);
       glVertex3f(x, -y, -z);
     glEnd();
-    glColor3f(1.0f, 0.0f, 1.0f);
+    
+    glDisable(GL_TEXTURE_2D);
     int zaux = (-z)+1;
     int yaux = (-y)+3;
     while(yaux<(y)){
       zaux = (-z)+1;
       while(zaux < z){
-
+      glShadeModel(GL_SMOOTH);
       glBegin(GL_QUADS);
+      glColor3f(0.6, 0.6, 1);
       glVertex3f(-x-0.01,  yaux+0.5,  zaux+0.5);
       glVertex3f(-x-0.01,  yaux+0.5, zaux-0.5);
+      glColor3f(1, 1, 1);
       glVertex3f(-x-0.01, yaux-0.5, zaux-0.5);
       glVertex3f(-x-0.01, yaux-0.5,  zaux+0.5);
       glEnd();
@@ -757,10 +811,12 @@ void drawBullding(int x, int y, int z, int xi, int zi){
     while(yaux<(y)){
       xaux = (-x)+1;
       while(xaux < x){
-
+      glShadeModel(GL_SMOOTH);
       glBegin(GL_QUADS);
+      glColor3f(0.6, 0.6, 1);
       glVertex3f(xaux+0.5,  yaux+0.5,-z-0.01);
       glVertex3f(xaux-0.5,  yaux+0.5,-z-0.01);
+      glColor3f(1, 1, 1);
       glVertex3f(xaux-0.5, yaux-0.5,-z-0.01);
       glVertex3f(xaux+0.5, yaux-0.5,-z-0.01);
       glEnd();
@@ -774,10 +830,12 @@ void drawBullding(int x, int y, int z, int xi, int zi){
     yaux = (-y)+3;
     while(yaux<(y)){
       while(zaux > -z){
-
+      glShadeModel(GL_SMOOTH);
       glBegin(GL_QUADS);
+      glColor3f(0.6, 0.6, 1);
       glVertex3f(x+0.01,  yaux+0.5,  zaux-0.5);
       glVertex3f(x+0.01,  yaux+0.5, zaux+0.5);
+      glColor3f(1, 1, 1);
       glVertex3f(x+0.01, yaux-0.5, zaux+0.5);
       glVertex3f(x+0.01, yaux-0.5,  zaux-0.5);
       glEnd();
@@ -792,10 +850,12 @@ void drawBullding(int x, int y, int z, int xi, int zi){
     yaux = (-y)+3;
     while(yaux<(y)){
       while(xaux > -x){
-
+      glShadeModel(GL_SMOOTH);
       glBegin(GL_QUADS);
+      glColor3f(0.6, 0.6, 1);
       glVertex3f(xaux+0.5, yaux+0.5, z+0.01);
       glVertex3f(xaux-0.5, yaux+0.5, z+0.01);
+      glColor3f(1, 1, 1);
       glVertex3f(xaux-0.5, yaux-0.5, z+0.01);
       glVertex3f(xaux+0.5, yaux-0.5, z+0.01);
       glEnd();
@@ -1662,6 +1722,11 @@ void drawField(){
 
   drawBullding(6, 12, 6, -33, 45);
   drawBullding(5, 7, 6, 38, -43);
+
+  drawLights(8.5, 15.5);
+  drawLights(-8.5, -15.5);
+  drawLights(8.5, -15.5);
+  drawLights(-8.5, 15.5);
 
   drawRoad();
 }

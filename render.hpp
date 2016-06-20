@@ -23,7 +23,7 @@ public:
   void draw();
   void drawSits(int side);
   void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius, int rot);
-  void drawBullding(int x, int y, int z, int xi, int zi);
+  void drawBullding(int x, int y, int z, int xi, int zi, int tex);
   void drawLights(int x, int y);
   void print(char *string, GLfloat x, GLfloat y);
   void drawField();

@@ -1480,38 +1480,39 @@ void Render::drawBullding(int x, int y, int z, int xi, int zi){
 
    glBegin(GL_QUADS);               
       
-      glVertex3f( x, y, -z);
-      glVertex3f(-x, y, -z);
-      glVertex3f(-x, y,  z);
-      glVertex3f( x, y,  z);
+      glTexCoord2f(0.0f,0.0f); glVertex3f( x, y, -z);
+      glTexCoord2f(10.0f,0.0f); glVertex3f(-x, y, -z);
+      glTexCoord2f(10.0f,10.0f); glVertex3f(-x, y,  z);
+      glTexCoord2f(0.0f,10.0f); glVertex3f( x, y,  z);
  
-      glVertex3f( x, -y,  z);
-      glVertex3f(-x, -y,  z);
-      glVertex3f(-x, -y, -z);
-      glVertex3f( x, -y, -z);
+      glTexCoord2f(0.0f,0.0f); glVertex3f( x, -y,  z);
+      glTexCoord2f(10.0f,0.0f); glVertex3f(-x, -y,  z);
+      glTexCoord2f(10.0f,10.0f); glVertex3f(-x, -y, -z);
+      glTexCoord2f(0.0f,10.0f); glVertex3f( x, -y, -z);
  
-      glVertex3f( x,  y, z);
-      glVertex3f(-x,  y, z);
-      glVertex3f(-x, -y, z);
-      glVertex3f( x, -y, z);
+      glTexCoord2f(0.0f,0.0f); glVertex3f( x,  y, z);
+      glTexCoord2f(10.0f,0.0f); glVertex3f(-x,  y, z);
+      glTexCoord2f(10.0f,10.0f); glVertex3f(-x, -y, z);
+      glTexCoord2f(0.0f,10.0f); glVertex3f( x, -y, z);
  
-      glVertex3f( x, -y, -z);
-      glVertex3f(-x, -y, -z);
-      glVertex3f(-x,  y, -z);
-      glVertex3f( x,  y, -z);
+      glTexCoord2f(0.0f,0.0f); glVertex3f( x, -y, -z);
+      glTexCoord2f(10.0f,0.0f); glVertex3f(-x, -y, -z);
+      glTexCoord2f(10.0f,10.0f); glVertex3f(-x,  y, -z);
+      glTexCoord2f(0.0f,10.0f); glVertex3f( x,  y, -z);
  
-      glVertex3f(-x,  y,  z);
-      glVertex3f(-x,  y, -z);
-      glVertex3f(-x, -y, -z);
-      glVertex3f(-x, -y,  z);
+      glTexCoord2f(0.0f,0.0f); glVertex3f(-x,  y,  z);
+      glTexCoord2f(10.0f,0.0f); glVertex3f(-x,  y, -z);
+      glTexCoord2f(10.0f,10.0f); glVertex3f(-x, -y, -z);
+      glTexCoord2f(0.0f,10.0f); glVertex3f(-x, -y,  z);
  
-      glVertex3f(x,  y, -z);
-      glVertex3f(x,  y,  z);
-      glVertex3f(x, -y,  z);
-      glVertex3f(x, -y, -z);
+      glTexCoord2f(0.0f,0.0f); glVertex3f(x,  y, -z);
+      glTexCoord2f(10.0f,0.0f); glVertex3f(x,  y,  z);
+      glTexCoord2f(10.0f,10.0f); glVertex3f(x, -y,  z);
+      glTexCoord2f(0.0f,10.0f);glVertex3f(x, -y, -z);
     glEnd();
     
     glDisable(GL_TEXTURE_2D);
+    
     int zaux = (-z)+1;
     int yaux = (-y)+3;
     while(yaux<(y)){
